@@ -1,0 +1,1644 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARAMDOMIZER</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3b5fa3;
+            --primary-light: #4f72b8;
+            --background: #1a202c;
+            --background-lighter: #232c3b;
+            --text-color: #e2e8f0;
+            --card-background: rgba(45, 55, 72, 0.4);
+            --card-shadow: 0 0.4vmin 0.8vmin rgba(0,0,0,0.2);
+            --dusk-color: #ffb74d;
+            --dawn-color: #2196f3;
+            --role-jungle: #4caf50;
+            --role-support: #9c27b0;
+            --role-carry: #f4436;
+            --role-offlane: #ff9800;
+            --role-midlane: #2196f3;
+            --zoom-scale: 1;
+            --gold-color: #FFD700;
+            --gold-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            --font-family: 'Inter', sans-serif;
+			font-family: 'Poppins', sans-serif;
+			fontWeight = '100';
+            min-height: 100vh;
+            background: var(--background);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            --background-image: url('https://i.ibb.co/HT3X1GJd/yUIB2p6.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            overflow: auto;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+        }
+        .app-container {
+            width: 100%;
+            min-height: 100vh;
+            transform-origin: top center;
+            transform: scale(var(--zoom-scale));
+            padding: calc(2vmin * (1 / var(--zoom-scale)));
+            overflow: visible;
+        }
+        .loading-hidden {
+            visibility: hidden !important;
+            opacity: 0 !important;
+        }
+        .center-space button {
+            min-width: 15vmin;
+        }
+        button {
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            box-shadow: var(--gold-shadow);
+            border: 0.1vmin solid rgba(255, 215, 0, 0.3);
+			color: var(--gold-color);
+        }
+        .hero-portrait:hover {
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+            border: 0.1vmin solid rgba(255, 215, 0, 0.3);
+        }
+        .hero-portrait {
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+            border: 0.1vmin solid rgba(255, 215, 0, 0.3);
+        }		
+        .progress-text {
+            color: var(--gold-color);
+        }
+        .enable-all-btn, .close-grid-btn {
+            --background: var(--gold-color);
+        }
+        .hero-grid-item.enabled {
+            border: 0.1vmin solid var(--gold-color);
+        }
+        .modal-content {
+            border-top: 3vmin solid var(--gold-color);
+        }
+        .role-label {
+            --border: 0.1vmin solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+        }
+        .hero-name {
+            --border: 0.1vmin solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+        }
+        #randomize-btn:hover .foreground-img {
+            clip-path: inset(0 0 0 0);
+            opacity: 1;
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.7));
+        }
+        .hero-grid-item {
+            --border: 0.1vmin solid rgba(255, 215, 0, 0.3);
+            --box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+        }
+        .header-container {
+            display: grid;
+            --grid-template-columns: minmax(0, 1fr) minmax(0, 30vmin) minmax(0, 1fr);
+			grid-template-columns: minmax(0, 1fr) min-content minmax(0, 1fr);
+            justify-content: center;
+            align-items: center;
+            --padding: 1vmin 1vmin;
+            --margin-bottom: 0.1vmin;
+            --width: 100%;
+        }
+        .label-dusk {
+            grid-column: 3;
+            justify-self: center;
+            margin-right: 2vmin;
+        }
+        .label-dawn {
+            grid-column: 1;
+            justify-self: center;
+            --margin-left: 2vmin;
+        }
+        header {
+            grid-column: 2;
+            text-align: center;
+            font-size: clamp(2.1rem, 2vw, 1.5rem);
+            font-weight: 900;
+            letter-spacing: 0.01em;
+            background-image: linear-gradient(45deg, var(--dawn-color), var(--dusk-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            --padding: 0 1.5vmin;
+			--min-width: 0;
+        }
+        .label-dusk, .label-dawn {
+            font-size: clamp(3.2rem, 3vw, 2.2rem);
+            font-weight: 900;
+            padding: 0.1vmin 1.2vmin;
+            border-radius: 1.2vmin;
+            background: rgba(45, 55, 72, 0.85);
+            box-shadow: 0 0 1vmin rgba(45, 55, 72, 0.85);
+            text-align: center;
+            min-width: 10vmin;
+			text-shadow: 8px 5px 9px #000000;
+        }
+        .label-dusk {color: var(--dusk-color);}
+        .label-dawn {color: var(--dawn-color);}
+        .main {
+            flex-grow: 1;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 30vmin) minmax(0, 1fr);
+            padding: 2vmin;
+            gap: 1vmin;
+            height: calc(100vh - 6vmin - 4rem);
+            align-content: start;
+        }
+        .team {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8vmin;
+        }
+        #left-team { grid-column: 1 / 2; }
+        #right-team { grid-column: 3 / 4; }
+        .center-space {
+            grid-column: 2 / 3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5vmin;
+            margin: 8vmin 0;
+            min-width: 20vmin;
+        }
+        .player-card {
+            display: flex;
+            align-items: center;
+            gap: 1.2vmin;
+            --background: rgba(45, 55, 72, 0.4);
+            padding: 0.9vmin;
+            border-radius: 1.2vmin;
+            --box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+        }
+        #left-team .player-card {
+            justify-content: flex-end;
+        }
+        #right-team .player-card {
+            justify-content: flex-start;
+        }
+        .role-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.2vmin 1vmin;
+            border-radius: 0.8vmin;
+            font-size: clamp(2.7rem, 2vw, 1.3rem);
+            font-weight: 900;
+            min-height: 8vmin;
+            min-width: 34vmin;
+            background: rgba(33, 44, 59, 1);
+        }
+        .role-label img {
+            width: 7vmin;
+            height: 7vmin;
+            flex-shrink: 0;
+        }
+        #left-team .role-label {
+            flex-direction: row-reverse;
+        }
+        #right-team .role-label {
+            flex-direction: row;
+        }
+        .role-text {
+            flex-grow: 1;
+            text-align: center;
+			text-shadow: 8px 5px 7px #000000;
+        }
+        .hero-portrait {
+            width: 12.6vmin;
+            height: 15vmin;
+            border-radius: 0.6vmin;
+            min-width: 12vmin;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        .hero-portrait canvas {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 0.6vmin;
+            display: block;
+        }
+        .role-jungle { color: #a5d6a7; }
+        .role-support { color: #ce93d8; }
+        .role-carry { color: #ffab91; }
+        .role-offlane { color: #ffcc80; }
+        .role-midlane { color: #90caf9; }
+		.hero-name {
+			--padding: 0.2vmin 14vmin;
+			border-radius: 0.8vmin;
+			font-size: clamp(2.2rem, 2vw, 1.3rem);
+			font-weight: 900;
+			text-align: center;
+			min-height: 8vmin;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			min-width: 35vmin;
+			background: rgba(33, 44, 59, 1);
+			position: relative;
+			z-index: 100;
+			text-shadow: 8px 5px 7px #000000;
+		}
+        button {
+            padding: 1.2vmin 2.4vmin;
+            font-size: clamp(1.1rem, 2.2vw, 1.3rem);
+            border: 0.1vmin solid transparent;
+            border-radius: 1.2vmin;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(45, 55, 72, 0.4);
+        }
+        #randomize-btn {
+            padding: 2vmin;
+            border: none;
+            box-shadow: none;
+            background: transparent;
+            position: relative;
+            overflow: hidden;
+            width: 27vmin;
+            height: 27vmin;
+        }
+        #randomize-btn .background-img,
+        #randomize-btn .foreground-img {
+            width: 100%;
+            height: 100%;
+            object-fit: scale-down;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        #randomize-btn .background-img {
+            opacity: 0.3;
+        }
+        #randomize-btn .foreground-img {
+            clip-path: inset(0 100% 0 0);
+            opacity: 0;
+            transition: clip-path 0.3s ease, opacity 0.3s ease;
+        }
+        #randomize-btn:hover {
+            transform: none;
+            background: transparent;
+            border-color: transparent;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .pulse { animation: pulse 0.5s ease; }
+        .progress-container {
+            width: 14vmin;
+            text-align: center;
+        }
+        .progress-text {
+            font-size: clamp(1.3rem, 2.2vw, 1.5rem);
+        }
+        .progress-hidden { display: none; }
+        #preload-container { display: none; }
+        .heroes-grid-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10;
+            padding: 2vmin;
+            overflow-y: auto;
+            transition: opacity 0.7s ease;
+        }
+        .grid-header {
+            display: flex;
+            justify-content: center;
+            gap: 1vmin;
+            height: 5vmin;
+            margin-bottom: 1vmin;
+        }
+        .heroes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(14vmin, 1fr));
+            gap: 1vmin;
+            padding: 2vmin;
+            max-width: 100%;
+            max-height: calc(100vh - 10vmin);
+            margin: 0 auto;
+            align-content: start;
+            overflow-y: auto;
+        }
+        .hero-grid-item {
+            position: relative;
+            cursor: pointer;
+            border-radius: 0.6vmin;
+            overflow: hidden;
+            aspect-ratio: 4 / 5;
+        }
+        .hero-grid-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: top;
+            display: block;
+            clip-path: inset(0 0 20% 0);
+        }
+        .hero-grid-item.disabled img {
+            filter: grayscale(100%) opacity(50%);
+        }
+        .hero-grid-item .hero-name-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            color: var(--text-color);
+            text-align: center;
+            padding: 0.5vmin;
+            font-size: clamp(1.1rem, 2vw, 1.3rem);
+            font-weight: 500;
+        }
+        .close-grid-btn, .enable-all-btn {
+            --background: var(--primary-color);
+            color: white;
+            --border: none;
+            font-size: clamp(1.2rem, 2vw, 1.4rem);
+            padding: 0.5vmin 1vmin;
+            border-radius: 0.6vmin;
+            cursor: pointer;
+            z-index: 11;
+        }
+        .close-grid-btn:hover, .enable-all-btn:hover {
+            --background: var(--primary-light);
+			color: var(--gold-color);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 20;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .modal.show {
+            display: flex;
+            opacity: 1;
+        }
+        .modal-content {
+            background: var(--card-background);
+            border-radius: 1.2vmin;
+            padding: 2vmin;
+            max-width: 40vmin;
+            width: 90%;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+        .modal.show .modal-content {
+            transform: scale(1);
+        }
+        .modal-content h2 {
+            font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+            margin-bottom: 1vmin;
+            background: white;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .modal-content p {
+            font-size: clamp(1rem, 1.8vw, 1.2rem);
+            margin-bottom: 2vmin;
+        }
+        .modal-content button {
+            background: var(--primary-color);
+            color: white;
+            padding: 1vmin 2vmin;
+            font-size: clamp(1rem, 1.8vw, 1.2rem);
+            border: none;
+            border-radius: 0.6vmin;
+        }
+        .modal-content button:hover {
+            background: var(--primary-light);
+			color: var(--gold-color);
+        }
+        @media (max-width: 1200px) {
+            .main {
+                grid-template-columns: minmax(0, 1fr) minmax(0, 20vmin) minmax(0, 1fr);
+            }
+            .header-container {
+                grid-template-columns: minmax(0, 1fr) minmax(0, 20vmin) minmax(0, 1fr);
+            }
+            .center-space { margin: 4vmin 0; }
+            .heroes-grid { grid-template-columns: repeat(auto-fit, minmax(12vmin, 1fr)); }
+        }
+        @media (max-width: 992px) {
+            .header-container {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5vmin;
+                padding: 0.2vmin 2vmin;
+            }
+            .label-dusk, .label-dawn {
+                justify-self: center;
+                margin: 0;
+            }
+            header {
+                font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+                margin: 0;
+                padding: 0.5vmin 0;
+            }
+            .label-dusk, .label-dawn {
+                font-size: clamp(1.2rem, 2.5vw, 2rem);
+                width: 100%;
+            }
+            .main {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 2vmin;
+                height: auto;
+                min-height: calc(100vh - 10vmin - 4rem);
+            }
+            .center-space { margin: 4vmin auto; }
+            .team { max-width: 100%; width: 100%; }
+            .player-card { gap: 1.2vmin; padding: 0.9vmin; }
+            .heroes-grid { grid-template-columns: repeat(auto-fit, minmax(10vmin, 1fr)); }
+            .role-label { min-width: 18vmin; }
+        }
+        @media (max-width: 768px) {
+            .main { padding: 1.5vmin; }
+            .center-space { margin: 3vmin auto; }
+            .header-container {
+                padding: 0.5vmin;
+            }
+            header { font-size: clamp(1.2rem, 1.8vw, 1.6rem); }
+            .player-card { flex-direction: column; text-align: center; gap: 1vmin; }
+            .role-label, .hero-name { width: 100%; }
+            .hero-portrait { width: 18vmin; height: 21.6vmin; }
+            .heroes-grid { grid-template-columns: repeat(auto-fit, minmax(9vmin, 1fr)); }
+            #randomize-btn { padding: 1.2vmin; width: 20vmin; height: 20vmin; }
+            #randomize-btn .background-img,
+            #randomize-btn .foreground-img { width: 100%; height: 100%; }
+            .label-dusk, .label-dawn { font-size: clamp(0.9rem, 1.5vw, 1.4rem); }
+            .grid-header { height: 6vmin; }
+            .enable-all-btn, .close-grid-btn { font-size: clamp(1rem, 1.8vw, 1.2rem); }
+            .modal-content { max-width: 80%; }
+            .role-label { min-width: 100%; flex-direction: row; justify-content: center; }
+            #left-team .role-label, #right-team .role-label { flex-direction: row; }
+        }
+        @media (max-width: 480px) {
+            .header-container {
+                padding: 0.3vmin;
+            }
+            header { font-size: clamp(1.2rem, 1.8vw, 1.6rem); }
+            .player-card { flex-direction: column; text-align: center; gap: 1vmin; }
+            .role-label, .hero-name { width: 100%; }
+            .hero-portrait { width: 18vmin; height: 21.6vmin; }
+            .heroes-grid { grid-template-columns: repeat(auto-fit, minmax(8vmin, 1fr)); }
+            #randomize-btn { padding: 1.2vmin; width: 20vmin; height: 20vmin; }
+            #randomize-btn .background-img,
+            #randomize-btn .foreground-img { width: 100%; height: 100%; }
+            .label-dusk, .label-dawn { font-size: clamp(0.9rem, 1.5vw, 1.4rem); }
+            .grid-header { height: 6vmin; }
+            .enable-all-btn, .close-grid-btn { font-size: clamp(1rem, 1.8vw, 1.2rem); }
+            .modal-content { max-width: 80%; }
+            .role-label { min-width: 100%; flex-direction: row; justify-content: center; }
+            #left-team .role-label, #right-team .role-label { flex-direction: row; }
+        }
+        .portrait-content, .text-content {
+            transition: opacity 0.3s ease;
+        }
+        .fade-out {
+            opacity: 0;
+        }
+        .letter {
+            display: inline-block;
+            transform-origin: center;
+            animation: explode 0.5s ease-out forwards;
+            opacity: 1;
+            z-index: 101;
+        }
+        @keyframes explode {
+            100% {
+                transform: translate(var(--x), var(--y)) rotate(var(--rotation));
+                opacity: 0;
+            }
+        }
+        .text-content {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+        #melee-btn.active, #ranged-btn.active {
+         background: var(--gold-color);
+         color: black;
+         border: 0.1vmin solid var(--gold-color);
+     }
+        .item-image {
+            filter: blur(5px);
+            transition: filter 0.5s ease;
+        }
+        .item-image.loaded {
+            filter: blur(0);
+        }
+        /* New styles for zoom buttons */
+        .zoom-buttons-container {
+            display: flex;
+            gap: 1vmin;
+            width: 15vmin;
+            justify-content: center;
+        }
+		.zoom-buttons-container .zoom-btn {
+			flex: 1; /* Hace que cada botón ocupe la mitad del ancho del contenedor */
+			padding: 1.2vmin 1.2vmin; /* Mantén el padding para que no se vean aplastados */
+			font-size: clamp(1.1rem, 2.2vw, 1.3rem);
+			min-width: 0; /* Importante: permite que los botones se encogieran por debajo del min-width */
+		}	
+        .zoom-btn {
+            flex: 1;
+            padding: 1.2vmin 1.2vmin;
+            font-size: clamp(1.1rem, 2.2vw, 1.3rem);
+            min-width: 0;
+        }
+        /* NEW: Dedicated CLOSE button for Build Randomizer view */
+        /* Replace existing .close-build-btn block with this */
+.close-build-btn {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 1.2vmin 2.4vmin;
+    font-size: clamp(1.1rem, 2.2vw, 1.3rem);
+    background: rgba(45, 55, 72, 0.4);
+    color: var(--text-color);
+    border: 0.1vmin solid transparent;
+    border-radius: 1.2vmin;
+    cursor: pointer;
+    z-index: 31;
+    /* match build view duration & easing: */
+    transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+    will-change: opacity, visibility;
+}
+.close-build-btn.visible {
+    visibility: visible;
+    opacity: 1;
+}
+        .close-build-btn:hover {
+            box-shadow: var(--gold-shadow);
+            border: 0.1vmin solid rgba(255, 215, 0, 0.3);
+            color: var(--gold-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header-container loading-hidden">
+            <div class="label-dawn">DAWN</div>
+            <header>ARAMDOMIZER</header>
+            <div class="label-dusk">DUSK</div>
+        </div>
+        <div class="main">
+            <div class="team loading-hidden" id="left-team"></div>
+            <div class="center-space">
+                <button id="randomize-btn">
+                    <img class="background-img" src="https://i.imgur.com/CAV6pCe.png" alt="">
+                    <img class="foreground-img" src="https://i.imgur.com/CAV6pCe.png" alt="">
+                </button>
+                <div class="progress-container" id="progress-container">
+                    <div class="progress-text" id="progress-text">Compiling Shaders: 0%</div>
+                </div>
+                <button id="reset-btn" class="loading-hidden">RESET</button>
+                <button id="heroes-btn" class="loading-hidden">HEROES</button>
+                <button id="melee-btn" class="loading-hidden">MELEE</button>
+                <button id="ranged-btn" class="loading-hidden">RANGED</button>
+                <button id="build-btn" class="loading-hidden">BUILD</button>
+                <div class="zoom-buttons-container">
+                    <button id="zoom-in-btn" class="loading-hidden zoom-btn">+</button>
+                    <button id="zoom-out-btn" class="loading-hidden zoom-btn">-</button>
+                </div>
+            </div>
+            <div class="team loading-hidden" id="right-team"></div>
+        </div>
+    </div>
+    <div id="heroes-grid-container" class="heroes-grid-container">
+        <div class="heroes-grid" id="heroes-grid"></div>
+        <div class="grid-header">
+            <button class="enable-all-btn">ENABLE ALL</button>
+            <button class="close-grid-btn">CLOSE <i class="fas fa-times"></i></button>
+        </div>
+    </div>
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h2>Error</h2>
+            <p>Cannot disable this hero. At least 10 heroes must remain enabled.</p>
+            <button id="modal-close-btn">Close</button>
+        </div>
+    </div>
+    <div id="preload-container"></div>
+    <!-- NEW: Dedicated CLOSE button for Build Randomizer view -->
+    <button class="close-build-btn" id="close-build-btn">CLOSE</button>
+    <script>
+		const heroes = [
+			{ name: "Renna", enabled: true, Melee: false },
+			{ name: "Khaimera", enabled: true, Melee: true },
+			{ name: "Sparrow", enabled: true, Melee: false },
+			{ name: "Grux", enabled: true, Melee: true },
+			{ name: "Greystone", enabled: true, Melee: true },
+			{ name: "Skylar", enabled: true, Melee: false },
+			{ name: "TwinBlast", enabled: true, Melee: false },
+			{ name: "Murdock", enabled: true, Melee: false },
+			{ name: "Boris", enabled: true, Melee: true },
+			{ name: "Dekker", enabled: true, Melee: false },
+			{ name: "Riktor", enabled: true, Melee: true },
+			{ name: "Revenant", enabled: true, Melee: false },
+			{ name: "Countess", enabled: true, Melee: true },
+			{ name: "Argus", enabled: true, Melee: false },
+			{ name: "Gideon", enabled: true, Melee: false },
+			{ name: "Steel", enabled: true, Melee: true },
+			{ name: "Lt. Belica", enabled: true, Melee: false },
+			{ name: "Drongo", enabled: true, Melee: false },
+			{ name: "Serath", enabled: true, Melee: true },
+			{ name: "Morigesh", enabled: true, Melee: false },
+			{ name: "Yurei", enabled: true, Melee: true },
+			{ name: "Aurora", enabled: true, Melee: true },
+			{ name: "Kira", enabled: true, Melee: false },
+			{ name: "Mourn", enabled: true, Melee: true },
+			{ name: "Phase", enabled: true, Melee: false },
+			{ name: "Crunch", enabled: true, Melee: true },
+			{ name: "Iggy & Scorch", enabled: true, Melee: false },
+			{ name: "Yin", enabled: true, Melee: true },
+			{ name: "Feng Mao", enabled: true, Melee: true },
+			{ name: "Wraith", enabled: true, Melee: false },
+			{ name: "Shinbi", enabled: true, Melee: true },
+			{ name: "The Fey", enabled: true, Melee: false },
+			{ name: "Gadget", enabled: true, Melee: false },
+			{ name: "Kwang", enabled: true, Melee: true },
+			{ name: "Zarus", enabled: true, Melee: true },
+			{ name: "Sevarog", enabled: true, Melee: true },
+			{ name: "Rampage", enabled: true, Melee: true },
+			{ name: "Howitzer", enabled: true, Melee: false },
+			{ name: "Zinx", enabled: true, Melee: false },
+			{ name: "Muriel", enabled: true, Melee: false },
+			{ name: "Wukong", enabled: true, Melee: true },
+			{ name: "Narbash", enabled: true, Melee: true },
+			{ name: "Kallari", enabled: true, Melee: true },
+			{ name: "GRIM.exe", enabled: true, Melee: false },
+			{ name: "Akeron", enabled: true, Melee: true },
+			{ name: "Terra", enabled: true, Melee: true }
+		];
+		const items = [
+			{ name: "Warp Stream", image: "https://omeda.city/images/items/Quantum-Core.webp" },
+			{ name: "Dawnstar", image: "https://omeda.city/images/items/Dawnstar.webp" },
+			{ name: "Crescelia", image: "https://omeda.city/images/items/Crescelia.webp" },
+			{ name: "Dynamo", image: "https://omeda.city/images/items/Dynamo.webp" },
+			{ name: "Void Conduit", image: "https://omeda.city/images/items/VoidConduit.webp" },
+			{ name: "Windcaller", image: "https://omeda.city/images/items/Windcaller.webp" },
+			{ name: "Hexbound Bracers", image: "https://omeda.city/images/items/Hexbound-Bracers.webp" },
+			{ name: "Crystal Tear", image: "https://omeda.city/images/items/Crystal-Tear.webp" },
+			{ name: "Tainted Charm", image: "https://omeda.city/images/items/TaintedCharm.webp" },
+			{ name: "Lunaria", image: "https://omeda.city/images/items/Lunaria.webp" },
+			{ name: "Frosted Lure", image: "https://omeda.city/images/items/Frosted-Lure.webp" },
+			{ name: "Tainted Totem", image: "https://omeda.city/images/items/Flourishing-Totem.webp" },
+			{ name: "Marshal", image: "https://omeda.city/images/items/Marshal.webp" },
+			{ name: "Galaxy Greaves", image: "https://omeda.city/images/items/Galaxy-Greaves.webp" },
+			{ name: "Everbloom", image: "https://omeda.city/images/items/Everbloom.webp" },
+			{ name: "Vanguardian", image: "https://omeda.city/images/items/Star-Slayer.webp" },
+			{ name: "Truesilver Bracelet", image: "https://omeda.city/images/items/Truesilver-Bracelet.webp" },
+			{ name: "Spectra", image: "https://omeda.city/images/items/Spectra.webp" },
+			{ name: "Nuclear Rounds", image: "https://omeda.city/images/items/Nuclear-Rounds.webp" },
+			{ name: "Onixian Quiver", image: "https://omeda.city/images/items/Onixian-Quiver.webp" },
+			{ name: "Unbroken Will", image: "https://omeda.city/images/items/Unbroken-WIll.webp" },
+			{ name: "Flux Matrix", image: "https://omeda.city/images/items/Flux-Matrix.webp" },
+			{ name: "Dreambinder", image: "https://omeda.city/images/items/Dreambinder.webp" },
+			{ name: "Syonic Echo", image: "https://omeda.city/images/items/Syonic-Echo.webp" },
+			{ name: "Cybernetic Drive", image: "https://omeda.city/images/items/Cybernetic-Drive.webp" },
+			{ name: "Catalytic Drive", image: "https://omeda.city/images/items/Catalytic-Drive.webp" },
+			{ name: "Tainted Trident", image: "https://omeda.city/images/items/Tainted-Trident.webp" },
+			{ name: "Noxia", image: "https://omeda.city/images/items/Noxia.webp" },
+			{ name: "Gaia Greaves", image: "https://omeda.city/images/items/Gaia-Greaves.webp" },
+			{ name: "Echelon Cloak", image: "https://omeda.city/images/items/Echelon-Cloak.webp" },
+			{ name: "Void Helm", image: "https://omeda.city/images/items/Void-Helm.webp" },
+			{ name: "Overlord", image: "https://omeda.city/images/items/Nullifier.webp" },
+			{ name: "Nightfall", image: "https://omeda.city/images/items/Nightfall.webp" },
+			{ name: "Mindrazor", image: "https://omeda.city/images/items/Mindrazor.webp" },
+			{ name: "Dread", image: "https://omeda.city/images/items/Insanity.webp" },
+			{ name: "Fire Blossom", image: "https://omeda.city/images/items/Fire-Blossom.webp" },
+			{ name: "Mesmer", image: "https://omeda.city/images/items/Dreadwind.webp" },
+			{ name: "Caustica", image: "https://omeda.city/images/items/Caustica.webp" },
+			{ name: "Malady", image: "https://omeda.city/images/items/Blackout.webp" },
+			{ name: "Spear Of Desolation", image: "https://omeda.city/images/items/Spear-Of-Desolation.webp" },
+			{ name: "Astral Catalyst", image: "https://omeda.city/images/items/Astral-Catalyst.webp" },
+			{ name: "Tyranny", image: "https://omeda.city/images/items/Tyranny.webp" },
+			{ name: "Entropy", image: "https://omeda.city/images/items/Entropy.webp" },
+			{ name: "Plasma Blade", image: "https://omeda.city/images/items/Plasma-Blade.webp" },
+			{ name: "Penumbra", image: "https://omeda.city/images/items/Penumbra.webp" },
+			{ name: "Mistmeadow Buckler", image: "https://omeda.city/images/items/Mistmeadow-Buckler.webp" },
+			{ name: "Fist Of Razuul", image: "https://omeda.city/images/items/FistOfJazuul.webp" },
+			{ name: "Equinox", image: "https://omeda.city/images/items/Equinox.webp" },
+			{ name: "Earthshaker", image: "https://omeda.city/images/items/Earthshaker.webp" },
+			{ name: "Spirit Of Amir", image: "https://omeda.city/images/items/Spirit-Of-Amir.webp" },
+			{ name: "Orb Of Growth", image: "https://omeda.city/images/items/Orb-Of-Growth.webp" },
+			{ name: "Orb Of Enlightenment", image: "https://omeda.city/images/items/Orb-Of-Enlightenment.webp" },
+			{ name: "Giant's Ring", image: "https://omeda.city/images/items/Giants-Ring.webp" },
+			{ name: "Golem's Gift", image: "https://omeda.city/images/items/Zephyr.webp" },
+			{ name: "Timewarp", image: "https://omeda.city/images/items/Timewarp.webp" },
+			{ name: "Tainted Scepter", image: "https://omeda.city/images/items/Tainted-Scepter.webp" },
+			{ name: "Tainted Rounds", image: "https://omeda.city/images/items/Tainted-Rounds.webp" },
+			{ name: "Tainted Guard", image: "https://omeda.city/images/items/Palisade.webp" },
+			{ name: "Stonewall", image: "https://omeda.city/images/items/Stonewall.webp" },
+			{ name: "Spellbreaker", image: "https://omeda.city/images/items/Spellbreaker.webp" },
+			{ name: "Salvation", image: "https://omeda.city/images/items/Salvation.webp" },
+			{ name: "Prophecy", image: "https://omeda.city/images/items/Prophecy.webp" },
+			{ name: "Painweaver", image: "https://omeda.city/images/items/Painweaver.webp" },
+			{ name: "Omen", image: "https://omeda.city/images/items/Omen.webp" },
+			{ name: "Lifebinder", image: "https://omeda.city/images/items/Lifebinder.webp" },
+			{ name: "Tainted Bastion", image: "https://omeda.city/images/items/Leviathan.webp" },
+			{ name: "Legacy", image: "https://omeda.city/images/items/Legacy.webp" },
+			{ name: "Infernum", image: "https://omeda.city/images/items/Hellfire.webp" },
+			{ name: "Frostguard", image: "https://omeda.city/images/items/Frostguard.webp" },
+			{ name: "Elafrost", image: "https://omeda.city/images/items/Elafrost.webp" },
+			{ name: "Draconum", image: "https://omeda.city/images/items/Draconum.webp" },
+			{ name: "Demon Edge", image: "https://omeda.city/images/items/Demon-Edge.webp" },
+			{ name: "Combustion", image: "https://omeda.city/images/items/Combustion.webp" },
+			{ name: "Azure Core", image: "https://omeda.city/images/items/Azure-Core.webp" },
+			{ name: "Berserker's Axe", image: "https://omeda.city/images/items/Berserkers-Axe.webp" },
+			{ name: "Basilisk", image: "https://omeda.city/images/items/Basilisk.webp" },
+			{ name: "Rapture", image: "https://omeda.city/images/items/Rapture.webp" },
+			{ name: "Solaris", image: "https://omeda.city/images/items/Solaris.webp" },
+			{ name: "Overseer", image: "https://omeda.city/images/items/Overseer.webp" },
+			{ name: "Soulbinder", image: "https://omeda.city/images/items/Soulbinder.webp" },
+			{ name: "Envy", image: "https://omeda.city/images/items/Envy.webp" },
+			{ name: "Wraith Leggings", image: "https://omeda.city/images/items/Wraith-Leggings.webp" },
+			{ name: "Warden's Faith", image: "https://omeda.city/images/items/Wardens-Faith.webp" },
+			{ name: "Vanquisher", image: "https://omeda.city/images/items/Vanquisher.webp" },
+			{ name: "Tainted Blade", image: "https://omeda.city/images/items/Sawtoothed-Scimitar.webp" },
+			{ name: "Storm Breaker", image: "https://omeda.city/images/items/Storm-Breaker.webp" },
+			{ name: "Sky Splitter", image: "https://omeda.city/images/items/Sky-Splitter.webp" },
+			{ name: "Absolution", image: "https://omeda.city/images/items/Severance.webp" },
+			{ name: "Raiment of Renewal", image: "https://omeda.city/images/items/Raiment-of-Renewel.webp" },
+			{ name: "Oathkeeper", image: "https://omeda.city/images/items/Oathkeeper.webp" },
+			{ name: "Magnify", image: "https://omeda.city/images/items/Magnify.webp" },
+			{ name: "Lightning Hawk", image: "https://omeda.city/images/items/Lightning-Hawk.webp" },
+			{ name: "Deathstalker", image: "https://omeda.city/images/items/Fell-Blade.webp" },
+			{ name: "Demolisher", image: "https://omeda.city/images/items/Overlord.webp" },
+			{ name: "Crystalline Cuirass", image: "https://omeda.city/images/items/Crystalline_Cuirass.webp" },
+			{ name: "Citadel", image: "https://omeda.city/images/items/Citadel.webp" },
+			{ name: "Ashbringer", image: "https://omeda.city/images/items/Ashbringer.webp" },
+			{ name: "Aegis Of Agawar", image: "https://omeda.city/images/items/Aegis-Of-Agawar.webp" },
+			{ name: "Terminus", image: "https://omeda.city/images/items/Terminus.webp" },
+			{ name: "Megacosm", image: "https://omeda.city/images/items/Megacosm.webp" },
+			{ name: "Dust Devil", image: "https://omeda.city/images/items/Cyclone.webp" },
+			{ name: "World Breaker", image: "https://omeda.city/images/items/World-Breaker.webp" },
+			{ name: "The Perforator", image: "https://omeda.city/images/items/Perforator.webp" },
+			{ name: "Resolution", image: "https://omeda.city/images/items/Reckoning.webp" },
+			{ name: "Mutilator", image: "https://omeda.city/images/items/Mutilator.webp" },
+			{ name: "Viper", image: "https://omeda.city/images/items/Viper.webp" },
+			{ name: "Augmentation", image: "https://omeda.city/images/items/Augmentation.webp" },
+			{ name: "Imperator", image: "https://omeda.city/images/items/Imperator.webp" },
+			{ name: "Oblivion Crown", image: "https://omeda.city/images/items/Oblivion-Crown.webp" }
+		];
+        const heroPortraits = {
+            "Renna": "https://images.ctfassets.net/rm5ymc69vmwz/3OVfmySDJllmZu69qtPexH/3ad29bd197aa33072afdfbe5d2d6251b/Itn_Game_Hero_Card_Renna_Default__1_.png?fm=webp&w=512",
+            "Khaimera": "https://images.ctfassets.net/rm5ymc69vmwz/7bZvlL83GaduQ4183SLp4w/db45e0d3278a3d561d6f909dbf41d614/In_Game_Hero_Cards_Khaimera-Basic.png?fm=webp&w=512",
+            "Sparrow": "https://images.ctfassets.net/rm5ymc69vmwz/2AVdYDen7jDeDohllCONGR/b9ff2b4384c5af4ca53844f505f12f08/In-Game-Hero-Cards_Sparrow-Basic.png?fm=webp&w=512",
+            "Grux": "https://images.ctfassets.net/rm5ymc69vmwz/2qTKskafwXucFINDAFM3dI/3093f06e5d306ef17bf0b5be6faf20b8/In-Game-Hero-Cards_Grux-Basic.png?fm=webp&w=512",
+            "Greystone": "https://images.ctfassets.net/rm5ymc69vmwz/1JfmOCc5BAZcAFlgrLsmqL/669312c5cf6e8653f94c42a8b26d12a0/In_Game_Hero_Cards_Greystone-Basic.png?fm=webp&w=512",
+            "Skylar": "https://images.ctfassets.net/rm5ymc69vmwz/7ayf4BfTFZSiBFD7HShkTn/64befbd8cbe6562510011b59c72c8642/In_Game_Hero_Card_Skylar_Default.png?fm=webp&w=512",
+            "TwinBlast": "https://images.ctfassets.net/rm5ymc69vmwz/39M2OjOfABYokZFnmNBhRj/5b773546c60650ad22f3c0864729a24f/In-Game-Hero-Cards-Karolina_Twinblast-Basic.png?fm=webp&w=512",
+            "Murdock": "https://images.ctfassets.net/rm5ymc69vmwz/1d3XaBGHMJfNP3odpiC5e1/a1d10746818752cb2b97609fa74909f4/In-Game-Hero-Cards_Murdock-Basic.png?fm=webp&w=512",
+            "Boris": "https://images.ctfassets.net/rm5ymc69vmwz/60QWhJR9nC8D2BaKOLrjeX/7f372d5e936a509062cd6dd38cf4c109/In_Game_Hero_Card_Boris_Default.png?fm=webp&w=512",
+            "Dekker": "https://images.ctfassets.net/rm5ymc69vmwz/6I2afQiD7ZVvwI39tlTruV/0e5fefd90303ce62afcf00528155576d/In-Game-Hero-Cards_Dekker-Basic.png?fm=webp&w=512",
+            "Riktor": "https://images.ctfassets.net/rm5ymc69vmwz/4qx1VvbKUVIwKWNk7XVkfP/2d51fb107bc10b9034a6e6fbd48d27a9/In-Game-Hero-Cards_Riktor_Basic.png?fm=webp&w=512",
+            "Revenant": "https://images.ctfassets.net/rm5ymc69vmwz/MA90qGy9TFPYeGu4MktR5/bf19dae8a2b8597c0fbad578d0eda48c/In-Game-Hero-Cards_Revenant-Basic.png?fm=webp&w=512",
+            "Countess": "https://images.ctfassets.net/rm5ymc69vmwz/1xdp0lDBNV4usdyjGJCy1w/a2c5f9a33eb5a949fd884efd154c4720/In-Game-Hero-Cards_Countess-Basic.png?fm=webp&w=512",
+            "Argus": "https://images.ctfassets.net/rm5ymc69vmwz/2eiswACxcNSLJdrOw1568o/5e01623929f89afb5bc1a26a580b9e8a/In-Game-Hero-Cards_Argus_Basic.png?fm=webp&w=512",
+            "Gideon": "https://images.ctfassets.net/rm5ymc69vmwz/48ReTx0lH1ehBif8eWqfTy/1c199a4a41afd8e4293fe8217596bb6a/In_Game_Hero_Cards_Gideon-Basic.png?fm=webp&w=512",
+            "Steel": "https://images.ctfassets.net/rm5ymc69vmwz/4dD7OZ3vRAOfawxY4iQjxa/63bf84c3ca6768deea57679ba8a3f8b8/In_Game_Hero_Cards_Steel-Basic.png?fm=webp&w=512",
+            "Lt. Belica": "https://images.ctfassets.net/rm5ymc69vmwz/1h4gyuTOwh49PkU821jfI1/f11fb5fadaf9574e0d73eb538f31a531/In-Game-Hero-Cards_Belica-Basic.png?fm=webp&w=512",
+            "Drongo": "https://images.ctfassets.net/rm5ymc69vmwz/XSG2BPU2J7szwNsoCDY0g/eeb427957bd9de87e59e7ae1a7713880/In-Game-Hero-Cards_Drongo-Basic__1_.png?fm=webp&w=512",
+            "Serath": "https://images.ctfassets.net/rm5ymc69vmwz/2pkmZYYzalClaLcQypFvUL/6caad96b98c6b6a3fa956be1822c26d2/In-Game-Hero-Cards_Serath-Basic__1_.png?fm=webp&w=512",
+            "Morigesh": "https://images.ctfassets.net/rm5ymc69vmwz/7fKiBBVcNnATRXe1gpJSIF/68b5bfc5e8f740d2036907377e92ea57/In-Game-Hero-Cards_Morigesh__1_.png?fm=webp&w=512",
+            "Yurei": "https://images.ctfassets.net/rm5ymc69vmwz/1Q7p9ijKpHhMIXkPHwmvyZ/b1444773e7d84eb1a328471b75706c6e/In_Game_Hero_Card_Yurei_Default.png?fm=webp&w=512",
+            "Aurora": "https://images.ctfassets.net/rm5ymc69vmwz/73Oc9O1I2NFBn4rLsit4Rm/6d0d2403a4a9ff65907b38ef9dbb5e1c/In-Game-Hero-Card_Aurora.png?fm=webp&w=512",
+            "Kira": "https://images.ctfassets.net/rm5ymc69vmwz/6vBHcQBH5aixa2GPooZD8x/c532679a8ee6a4f85b31d36c2f1a6a71/In-Game-Hero-Cards_Kira-Basic.png?fm=webp&w=512",
+            "Mourn": "https://images.ctfassets.net/rm5ymc69vmwz/4Wqo3o2avI1DcLp17RLOMi/656e7c22c9f1e829db777af11485de9d/In-Game_Hero_Cards_Wood.png?fm=webp&w=512",
+            "Phase": "https://images.ctfassets.net/rm5ymc69vmwz/jsXiX2a9AFIDb1yU4qNMF/d0bf4fc2a1c9720174de7b8f3badf1c6/In-Game-Hero-Cards_Phase.png?fm=webp&w=512",
+            "Crunch": "https://images.ctfassets.net/rm5ymc69vmwz/3K1Bsh7dOMKMUmAgxFmI3H/76fcc57bac653d52c3d3aeaf278fbc5d/In-Game-Hero-Cards_Crunch__1_.png?fm=webp&w=512",
+            "Iggy & Scorch": "https://images.ctfassets.net/rm5ymc69vmwz/6cpDqsbJMi3GNez6VSnomf/4c4079cca1e5ea9aaa30ef0461127e49/In_Game_Hero_Cards_Iggy_Scorch_Default.png?fm=webp&w=512",
+            "Yin": "https://images.ctfassets.net/rm5ymc69vmwz/1USyR8Gtjed4Jp8v46VYv8/287bad9f86c4107f5c9ff0bbff0a009b/In_Game_Hero_Card_Yin_default.png?fm=webp&w=512",
+            "Feng Mao": "https://images.ctfassets.net/rm5ymc69vmwz/ka6d7YswVTsUS2YdUE28h/75f404e76fb5fcb0cf46362c4680fafb/In-Game-Hero-Cards_Feng-Mao-Basic-.png?fm=webp&w=512",
+            "Wraith": "https://images.ctfassets.net/rm5ymc69vmwz/6a3HtdANWgIfEylW4euhHp/475cc9a6e965e4f718058cfa9c88cd78/In-Game-Hero-Cards_Wraith-Basic.png?fm=webp&w=512",
+            "Shinbi": "https://images.ctfassets.net/rm5ymc69vmwz/4IouG0tR3YQws4NJbPx99y/aa1cf48a6d893e1ceb8af9c26c460502/In-Game-Hero-Cards_Shinbi.png?fm=webp&w=512",
+            "The Fey": "https://images.ctfassets.net/rm5ymc69vmwz/64ynpgH7AZaQx26loBQ0ho/d2af8dbf3b7b631c58a714b60677f5a5/In-Game-Hero-Cards_Th-Fae-Basic__1_.png?fm=webp&w=512",
+            "Gadget": "https://images.ctfassets.net/rm5ymc69vmwz/3skHIUETBEHim7IaiAcDZI/9050818bca7b30952cdee3174f987aa0/In_Game_Hero_Cards_Gadget-Basic.png?fm=webp&w=512",
+            "Kwang": "https://images.ctfassets.net/rm5ymc69vmwz/6b4OXIeKZBCZVPfd1Z95fc/c4584b4267a23450dd1dfbe3eb8bbbea/In_Game_Hero_Cards_Kwang_Basic.jpg?fm=webp&w=512",
+            "Zarus": "https://images.ctfassets.net/rm5ymc69vmwz/4edxMdpkxtmM35OkQA5PF4/e857d755d4e153c628616ff2b78b61bf/In-Game-Hero-Cards-Zarus-Basic.png?fm=webp&w=512",
+            "Sevarog": "https://images.ctfassets.net/rm5ymc69vmwz/teUC85QpAiTfrWoAgHfKR/a719e2e9e0f090b79537f92d9dfe4c0c/In-Game-Hero-Cards_Severog-Basic.png?fm=webp&w=512",
+            "Rampage": "https://images.ctfassets.net/rm5ymc69vmwz/1uHnjk53CdmzYRxgKUBaRf/129f808b90e0fd135a3241d857423500/In-Game-Hero-Cards_Rampage_Basic.png?fm=webp&w=512",
+            "Howitzer": "https://images.ctfassets.net/rm5ymc69vmwz/2sf8VTWDdTSioFtvkjeady/9b039892f73c5cbef1956f58125c5e15/In_Game_Hero_Cards_Howitzer-Basic.png?fm=webp&w=512",
+            "Zinx": "https://images.ctfassets.net/rm5ymc69vmwz/5o9y34XuDRsayMuzgeSoki/7f45498def4f171418735f1214c1a5a4/In_Game_Hero_Card_Zinx.jpg?fm=webp&w=512",
+            "Muriel": "https://images.ctfassets.net/rm5ymc69vmwz/34dfe8DMirsmD2ffDuJ2NT/7c063e9cdfadf768085a72e6804271cb/In_Game_Hero_Cards_Muriel-Basic.png?fm=webp&w=512",
+            "Wukong": "https://images.ctfassets.net/rm5ymc69vmwz/7gYpSUL3OtARDAnXFt5eJ9/60eb17ab904c3b3a8fb187f9d6f7ca88/In_Game_Hero_Card_Wukong__1_.png?fm=webp&w=512",
+            "Narbash": "https://images.ctfassets.net/rm5ymc69vmwz/3NAHCfeNHEmGtloMlzrjjg/4d3001fcb9dcd8c783f779dc1b71f263/In_Game_Hero_Cards_Narbash-Basic.png?fm=webp&w=512",
+            "Kallari": "https://images.ctfassets.net/rm5ymc69vmwz/6cihiUL8zovnlfUVEZKyko/ac6e6585537c9485db1669c9e48f072c/In-Game-Hero-Cards_Kallari-Basic.png?fm=webp&w=512",
+            "GRIM.exe": "https://images.ctfassets.net/rm5ymc69vmwz/5D1GsLAEILXA7tg2mF3yzZ/d794a5391da73816652b8e8764fe24f4/In-Game-Hero-Cards_Grimexe_default.png?fm=webp&w=512",
+            "Akeron": "https://images.ctfassets.net/rm5ymc69vmwz/6dTbnJ6g2canJW228C3Smz/9b56d2a2aadc5ab701d7aad90803806c/In_Game_Hero_Card_Akeron_Default.png?fm=webp&w=512",
+            "Terra": "https://images.ctfassets.net/rm5ymc69vmwz/1lBbaArsN9mkeh07JtpXwO/6491f9623dab3c7355caeba40e4d73f0/In_Game_Hero_Card_Terra__1_.jpg?fm=webp&w=512"
+        };
+        const roles = ["Jungle", "Support", "Carry", "Offlane", "Midlane"];
+        const roleImages = {
+            Jungle: "https://images.ctfassets.net/rm5ymc69vmwz/6JaDl8Kyhuf3SuKg5hmawm/940c90a3df918da908491fd484a85a53/jungle-icon.png",
+            Support: "https://images.ctfassets.net/rm5ymc69vmwz/56xq4b3IoxasOFDKn9H0ck/4f013ce50a054ef2cfc279244e7e50db/support-icon.png",
+            Carry: "https://images.ctfassets.net/rm5ymc69vmwz/7yBDcQt0PubKTa4020Gvew/4128d399db52ead318f43de03a823751/carry-icon.png",
+            Offlane: "https://images.ctfassets.net/rm5ymc69vmwz/3NYBBKt01ByNafA5nNUCUa/fa611629b0b2756e6210b7af2e02db2d/fist-icon.png",
+            Midlane: "https://images.ctfassets.net/rm5ymc69vmwz/3SeW8waKfUzQMJoDOlnJcl/c497985cc65c7b179c24dc36ffba2e5a/midlane-icon.png"
+        };
+        const buildImages = {
+            "Morigesh": "https://i.ibb.co/27gSRMrT/X8OTxmL.webp",
+            "Steel": "https://i.ibb.co/pBJVW6Z5/bzIUSGG.jpg",
+			"GRIM.exe": "https://i.ibb.co/ZR7PzffR/kRLezAJ.webp",
+			"Gideon": "https://i.ibb.co/rRN391Nd/7zlv8mJ.webp",
+			"Gadget": "https://i.ibb.co/Zzr4Xpfv/idJe0g9.webp",
+			"Riktor": "https://i.ibb.co/X0QstGY/UIbOlqt.webp",
+			"Narbash": "https://i.ibb.co/MyyHVSG4/zK28XzM.webp",
+			"Lt. Belica": "https://i.ibb.co/LXJM7S89/kqRRdBv.webp",
+			"Greystone": "https://i.ibb.co/mpZnH0Q/asSn2CQ.jpg",
+			"Iggy & Scorch": "https://i.ibb.co/MycLKyg8/pLhokdX.jpg",
+			"The Fey": "https://i.ibb.co/C3p3zjjg/X6TF7m4.webp",
+			"Terra": "https://i.ibb.co/cS9vhYn0/Hq5Psuv.webp",
+			"Wukong": "https://i.ibb.co/twGmRS2t/mUiIxM0.webp",
+			"Grux": "https://i.ibb.co/cSWw7DG1/lvpn8hr.jpg",
+			"Khaimera": "https://i.ibb.co/BH6jS0D1/Hr1c3wa.webp",
+			"Feng Mao": "https://i.ibb.co/m5qvXWTk/yJbjcyU.jpg",
+			"Kallari": "https://i.ibb.co/yFDj76Mm/9nTrObO.jpg",
+			"Sevarog": "https://i.ibb.co/84zV13vQ/rJxdP5u.jpg",
+			"Serath": "https://i.ibb.co/Ps5RJFj5/qJTZMPx.webp",
+			"Countess": "https://i.ibb.co/twRXzc0R/Gt1xuNT.jpg",
+			"Akeron": "https://i.ibb.co/2pDTrMB/Yej5G9F.webp",
+			"Boris": "https://i.ibb.co/JwwKxRTt/PYGjQIg.webp",
+			"Kwang": "https://i.ibb.co/hFfyrv8B/BlS59Eh.jpg",
+			"Yin": "https://i.ibb.co/9HPG5gk2/zQbOFas.webp",
+			"Sparrow": "https://i.ibb.co/yxbHHzq/CJT6agm.jpg",
+			"Wraith": "https://i.ibb.co/8gRB7ByP/1M4jW7s.webp",
+			"TwinBlast": "https://i.ibb.co/v4TCQKyB/4ruy77f.webp",
+			"Drongo": "https://i.ibb.co/LD7x8MhB/3tEWgUG.webp",
+			"Kira": "https://i.ibb.co/WWKHmyVw/3yliQw7.webp",
+			"Murdock": "https://i.ibb.co/yFX7v694/fB8iGQU.webp",
+			"Revenant": "https://i.ibb.co/gMv5CLd4/aBzmHLB.jpg",
+			"Skylar": "https://i.ibb.co/Lz2NsKLc/9jc58gN.webp",
+			"Renna": "https://i.ibb.co/nMXTPvNw/EiFuaUW.webp",
+			"Argus": "https://i.ibb.co/vCzz0YVz/Aps4mS1.webp",
+			"Howitzer": "https://i.ibb.co/kVpQ2FX2/6e78Wlw.webp",
+			"Dekker": "https://i.ibb.co/9H3YYZdn/xOe1SQv.webp",
+			"Muriel": "https://i.ibb.co/RGp6s7bT/VC311m4.jpg",
+			"Zinx": "https://i.ibb.co/2Yfw7GZp/DTodxUm.webp",
+			"Mourn": "https://i.ibb.co/5WJ7Cpsb/KHeCbX9.webp",
+			"Phase": "https://i.ibb.co/HL3dq27H/t81GAG5.jpg",
+			"Shinbi": "https://i.ibb.co/rf1b0fYz/ovcQWmy.webp",
+			"Aurora": "https://i.ibb.co/p6MM57Tt/YEnWrma.webp",
+			"Yurei": "https://i.ibb.co/0pp8PcqN/LPbinaw.webp",
+			"Zarus": "https://i.ibb.co/5gQ2SYyg/bCX1y7c.webp",
+			"Rampage": "https://i.ibb.co/1JhnJ2c9/I4RvnWK.webp",
+			"Crunch": "https://i.ibb.co/5hbP97TY/0TB712C.jpg"
+        };
+        const preloadedImages = {};
+        const preloadedBuilds = {};
+        let lastSelectedHeroName = null;
+        const cropImage = (img, callback) => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const cropHeight = img.height * 0.84;
+            canvas.width = img.width;
+            canvas.height = cropHeight;
+            ctx.drawImage(img, 0, 0, img.width, cropHeight, 0, 0, img.width, cropHeight);
+            callback(canvas);
+        };
+        const saveHeroesToLocalStorage = () => {
+            try {
+                localStorage.setItem('predecessorHeroesState', JSON.stringify(
+                    heroes.map(hero => ({ name: hero.name, enabled: hero.enabled }))
+                ));
+            } catch (e) {
+                console.error("Error saving heroes to localStorage", e);
+            }
+        };
+        const loadHeroesFromLocalStorage = () => {
+            try {
+                const savedState = localStorage.getItem('predecessorHeroesState');
+                if (savedState) {
+                    const parsedState = JSON.parse(savedState);
+                    heroes.forEach(hero => {
+                        const savedHero = parsedState.find(h => h.name === hero.name);
+                        if (savedHero) {
+                            hero.enabled = savedHero.enabled;
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error("Error loading heroes from localStorage", e);
+                localStorage.removeItem('predecessorHeroesState');
+            }
+        };
+        const saveZoomToLocalStorage = () => {
+            try {
+                localStorage.setItem('predecessorZoomLevel', document.documentElement.style.getPropertyValue('--zoom-scale'));
+            } catch (e) {
+                console.error("Error saving zoom level to localStorage", e);
+            }
+        };
+        const loadZoomFromLocalStorage = () => {
+            try {
+                const savedZoom = localStorage.getItem('predecessorZoomLevel');
+                if (savedZoom) {
+                    setZoom(parseFloat(savedZoom));
+                }
+            } catch (e) {
+                console.error("Error loading zoom level from localStorage", e);
+            }
+        };
+        const setZoom = (scale) => {
+            const minZoom = 0.7;
+            const maxZoom = 1.3;
+            const clampedScale = Math.max(minZoom, Math.min(maxZoom, scale));
+            document.documentElement.style.setProperty('--zoom-scale', clampedScale);
+            const inverseScale = 1 / clampedScale;
+            document.querySelector('.app-container').style.padding = `calc(2vmin * ${inverseScale})`;
+            document.querySelector('.app-container').offsetHeight;
+            saveZoomToLocalStorage();
+        };
+        const zoomIn = () => {
+            const currentScale = parseFloat(document.documentElement.style.getPropertyValue('--zoom-scale') || 1);
+            setZoom(currentScale + 0.1);
+        };
+        const zoomOut = () => {
+            const currentScale = parseFloat(document.documentElement.style.getPropertyValue('--zoom-scale') || 1);
+            setZoom(currentScale - 0.1);
+        };
+        const createItemsPool = () => {
+            if (document.getElementById('items-pool')) return; // Avoid recreating if exists
+            const pool = document.createElement('div');
+            pool.id = 'items-pool';
+            pool.style.position = 'absolute';
+            pool.style.left = '-9999px';
+            pool.style.top = '0';
+            pool.style.width = '0';
+            pool.style.height = '0';
+            pool.style.overflow = 'hidden';
+            items.forEach((item, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.style.display = 'flex';
+                itemDiv.style.gap = '0px';
+                itemDiv.style.alignItems = 'center';
+                const img = document.createElement('img');
+                img.className = 'item-image';
+                img.src = item.image;
+                img.style.width = '120px';
+                img.style.height = '120px';
+                img.style.objectFit = 'contain';
+                img.onload = () => {
+                    img.classList.add('loaded');
+                };
+                img.onerror = () => {
+                    img.alt = 'Item image failed to load';
+                };
+				const nameSpan = document.createElement('span');
+				nameSpan.textContent = item.name;
+				nameSpan.style.color = 'white';
+				nameSpan.style.fontSize = '2.0rem';           // Aumentado ligeramente para mejor impacto
+				nameSpan.style.fontFamily = '"Poppins", sans-serif'; // Fuente profesional y consistente
+				//nameSpan.style.fontFamily = '"Cormorant Garamond", serif';
+				nameSpan.style.letterSpacing = '0.04em';      // Espaciado sutil para elegancia
+				nameSpan.style.fontWeight = '900';            // Peso semi-bold para mejor jerarquía visual
+				nameSpan.style.textAlign = 'center';          // Centrado horizontal
+				nameSpan.style.display = 'block';             // Para que el texto ocupe todo el ancho y se centre bien
+				//nameSpan.style.marginTop = '1px';             // Pequeño margen superior para equilibrar visualmente con la imagen
+				nameSpan.style.lineHeight = '0.2';           // Evita líneas demasiado separadas
+				nameSpan.style.textShadow = '2px 2px 4px #000000'; // Sombra texto
+                itemDiv.appendChild(img);
+                itemDiv.appendChild(nameSpan);
+                itemDiv.setAttribute('data-item-index', index);
+                pool.appendChild(itemDiv);
+            });
+            document.body.appendChild(pool);
+        };
+    const preloadImages = () => {
+        const elements = {
+            preload: document.getElementById('preload-container'),
+            foregroundImg: document.querySelector('#randomize-btn .foreground-img'),
+            text: document.getElementById('progress-text'),
+            container: document.getElementById('progress-container')
+        };
+        const backgroundUrl = 'https://i.ibb.co/HT3X1GJd/yUIB2p6.jpg';
+        const allImages = [
+            'https://i.imgur.com/iESsnMy.png',
+            backgroundUrl,
+            ...Object.values(heroPortraits),
+            ...Object.values(roleImages),			
+            ...Object.values(buildImages),
+            //...items.map(item => item.image) // Preload item images too
+        ];
+        let loaded = 0;
+        let actualProgress = 0;
+        let displayedProgress = 0;
+        let animationFrame = null;
+        
+        // Initialize progress bar at 0%
+        elements.foregroundImg.style.clipPath = 'inset(0 100% 0 0)';
+        elements.foregroundImg.style.opacity = '0';
+        elements.text.textContent = 'Compiling Shaders: 0%';
+        
+        document.querySelectorAll('.header-container, #left-team, #right-team, #reset-btn, #heroes-btn, #zoom-in-btn, #zoom-out-btn').forEach(el => {
+            el.classList.add('loading-hidden');
+        });
+        const cachedBackground = localStorage.getItem('predecessorBackground');
+        let backgroundSet = false; // Flag para evitar sets múltiples
+        if (cachedBackground && !backgroundSet) {
+            document.body.style.backgroundImage = `url(${cachedBackground})`;
+            backgroundSet = true;
+        }
+        
+        // Function to animate the progress bar
+        const animateProgress = () => {
+            if (displayedProgress < actualProgress) {
+                const increment = Math.min(0.7, actualProgress - displayedProgress);
+                displayedProgress += increment;
+                if (displayedProgress > actualProgress) {
+                    displayedProgress = actualProgress;
+                }
+                
+                // Update the progress bar
+                elements.foregroundImg.style.clipPath = `inset(0 ${100 - displayedProgress}% 0 0)`;
+                elements.foregroundImg.style.opacity = displayedProgress / 100;
+                elements.text.textContent = `Compiling Shaders: ${Math.round(displayedProgress)}%`;
+            }
+            
+            if (actualProgress < 100 || displayedProgress < 100) {
+                animationFrame = requestAnimationFrame(animateProgress);
+            }
+        };
+        
+        allImages.forEach(src => {
+            const img = new Image();
+            img.src = src;
+            img.crossOrigin = "Anonymous";
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+                const dataURL = canvas.toDataURL(img.type || 'image/jpeg', 0.75); // Baja calidad a 0.75 para dataURL más ligera
+                let key = null;
+                if (src === backgroundUrl) {
+                    key = 'predecessorBackground';
+                    // ¡NUEVO: Asigna dataURL inmediatamente si no está seteado (primera carga)
+                    if (!backgroundSet) {
+                        document.body.style.backgroundImage = `url(${dataURL})`;
+                        backgroundSet = true;
+                    }
+                } else {
+                    const heroName = Object.keys(heroPortraits).find(key => heroPortraits[key] === src);
+                    if (heroName) {
+                        key = `hero-${heroName}`;
+                        preloadedImages[heroName] = img;
+                    } else {
+                        const roleName = Object.keys(roleImages).find(key => roleImages[key] === src);
+                        if (roleName) {
+                            key = `role-${roleName}`;
+                        } else {
+                            const buildHeroName = Object.keys(buildImages).find(key => buildImages[key] === src);
+                            if (buildHeroName) {
+                                key = `build-${buildHeroName}`;
+                                preloadedBuilds[buildHeroName] = img;
+                            }
+                        }
+                    }
+                }
+                if (key) {
+                    try {
+                        localStorage.setItem(key, dataURL);
+                    } catch (e) {
+                        console.error(`Error guardando ${key} en localStorage`, e);
+                    }
+                }
+                loaded++;
+                actualProgress = Math.min(100, Math.round((loaded / allImages.length) * 100));
+                
+                if (loaded === 1) {
+                    // Start animation when first image loads
+                    if (!animationFrame) {
+                        animationFrame = requestAnimationFrame(animateProgress);
+                    }
+                }
+                
+                if (loaded === allImages.length) {
+                    actualProgress = 100;
+                    // Wait for animation to complete before showing the app
+                    const checkCompletion = () => {
+                        if (displayedProgress >= 99.5) {
+                            setTimeout(() => {
+                                elements.container.classList.add('progress-hidden');
+                                elements.foregroundImg.style.clipPath = 'inset(0 0 0 0)';
+                                elements.foregroundImg.style.opacity = 1;
+                                document.querySelectorAll('.loading-hidden').forEach(el => {
+                                    el.classList.remove('loading-hidden');
+                                });
+                                loadZoomFromLocalStorage();
+                                // ¡NUEVO: Fallback final si por algún motivo no se setó el fondo
+                                if (!backgroundSet) {
+                                    const finalBackground = localStorage.getItem('predecessorBackground');
+                                    document.body.style.backgroundImage = `url(${finalBackground || backgroundUrl})`;
+                                }
+                            }, 500);
+                        } else {
+                            requestAnimationFrame(checkCompletion);
+                        }
+                    };
+                    checkCompletion();
+                }
+                elements.preload.appendChild(img);
+            };
+            img.onerror = () => {
+                loaded++;
+                actualProgress = Math.min(100, Math.round((loaded / allImages.length) * 100));
+                
+                if (loaded === 1) {
+                    // Start animation when first image loads
+                    if (!animationFrame) {
+                        animationFrame = requestAnimationFrame(animateProgress);
+                    }
+                }
+                
+                if (loaded === allImages.length) {
+                    actualProgress = 100;
+                    // Wait for animation to complete before showing the app
+                    const checkCompletion = () => {
+                        if (displayedProgress >= 99.5) {
+                            setTimeout(() => {
+                                elements.container.classList.add('progress-hidden');
+                                elements.foregroundImg.style.clipPath = 'inset(0 0 0 0)';
+                                elements.foregroundImg.style.opacity = 1;
+                                document.querySelectorAll('.loading-hidden').forEach(el => {
+                                    el.classList.remove('loading-hidden');
+                                });
+                                loadZoomFromLocalStorage();
+                                // Fallback en error: usa localStorage o URL
+                                if (!backgroundSet) {
+                                    const finalBackground = localStorage.getItem('predecessorBackground');
+                                    document.body.style.backgroundImage = `url(${finalBackground || backgroundUrl})`;
+                                }
+                            }, 500);
+                        } else {
+                            requestAnimationFrame(checkCompletion);
+                        }
+                    };
+                    checkCompletion();
+                }
+                elements.preload.appendChild(img);
+            };
+        });
+    };
+	// Corrected shuffle function using Fisher-Yates algorithm
+	const shuffle = arr => {
+		const newArr = [...arr];
+		for (let i = newArr.length - 1; i > 0; i--) {
+			const j = Math.floor(Math.random() * (i + 1));
+			[newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+		}
+		return newArr;
+	};
+        const createPlayerCards = (id, isRightTeam) => {
+            const container = document.getElementById(id);
+            container.innerHTML = '';
+            roles.forEach(role => {
+                const card = document.createElement('div');
+                card.className = 'player-card';
+                card.innerHTML = `
+                    ${isRightTeam ? '<div class="hero-portrait"><div class="portrait-content">?</div></div><div class="hero-name"><div class="text-content"></div></div>' : ''}
+                    <div class="role-label role-${role.toLowerCase()}">
+                        <img src="${roleImages[role]}" alt="${role} icon">
+                        <span class="role-text">${role}</span>
+                    </div>
+                    ${!isRightTeam ? '<div class="hero-name"><div class="text-content"></div></div><div class="hero-portrait"><div class="portrait-content">?</div></div>' : ''}
+                `;
+                container.appendChild(card);
+            });
+        };
+        let isCooldownActive = false;
+        const randomizeHeroes = () => {
+            if (isCooldownActive) {
+                return;
+            }
+            isCooldownActive = true;
+            const randomizeBtn = document.getElementById('randomize-btn');
+            randomizeBtn.classList.add('pulse');
+            setTimeout(() => randomizeBtn.classList.remove('pulse'), 500);
+            const portraits = document.querySelectorAll('.hero-portrait');
+            const names = document.querySelectorAll('.hero-name');
+            const enabledHeroes = heroes.filter(hero => hero.enabled);
+            if (enabledHeroes.length < 10) {
+                showModal('Not enough enabled heroes to randomize (minimum 10 required).');
+                isCooldownActive = false;
+                return;
+            }
+            const shuffled = shuffle([...enabledHeroes]).slice(0, 10);
+            portraits.forEach((portrait, i) => {
+                const card = portrait.closest('.player-card');
+                card.classList.add('pulse');
+                setTimeout(() => {
+                    const hero = shuffled[i] || { name: 'No Hero' };
+                    const textContent = card.querySelector('.text-content');
+                    textContent.textContent = hero.name;
+                    const heroDataUrl = localStorage.getItem(`hero-${hero.name}`);
+					if (heroDataUrl) {
+						const img = new Image();
+						img.onload = () => {
+							cropImage(img, (canvas) => {
+								const portraitContent = portrait.querySelector('.portrait-content');
+								portraitContent.innerHTML = '';
+								portraitContent.appendChild(canvas);
+							});
+						};
+						img.src = heroDataUrl;
+					} else if (preloadedImages[hero.name]) {
+                        cropImage(preloadedImages[hero.name], (canvas) => {
+                            const portraitContent = portrait.querySelector('.portrait-content');
+                            portraitContent.innerHTML = '';
+                            portraitContent.appendChild(canvas);
+                        });
+                    } else {
+                        const portraitContent = portrait.querySelector('.portrait-content');
+                        portraitContent.innerHTML = 'No Image';
+                    }
+                    setTimeout(() => card.classList.remove('pulse'), 500);
+                }, 150);
+            });
+            setTimeout(() => {
+                isCooldownActive = false;
+            }, 800);
+        };
+		const resetHeroes = () => {
+			const resetBtn = document.getElementById('reset-btn');
+			const randomizeBtn = document.getElementById('randomize-btn');
+			randomizeBtn.disabled = true;
+			resetBtn.classList.add('pulse');
+			setTimeout(() => resetBtn.classList.remove('pulse'), 500);
+			const portraits = document.querySelectorAll('.hero-portrait');
+			const names = document.querySelectorAll('.hero-name');
+			portraits.forEach(p => {
+				const portraitContent = p.querySelector('.portrait-content');
+				portraitContent.classList.add('fade-out');
+				portraitContent.addEventListener('transitionend', () => {
+					portraitContent.innerHTML = '?';
+					portraitContent.classList.remove('fade-out');
+				}, { once: true });
+			});
+			names.forEach(n => {
+				const textContent = n.querySelector('.text-content');
+				const letters = textContent.textContent.split('');
+				textContent.innerHTML = '';
+				const totalLetters = letters.length;
+				const firstHalfEnd = Math.ceil(totalLetters / 2);
+				letters.forEach((letter, index) => {
+					const span = document.createElement('span');
+					span.textContent = letter;
+					span.classList.add('letter');
+					let angle;
+					if (index < firstHalfEnd) {
+						angle = 180 + Math.random() * 90;
+					} else {
+						angle = 270 + Math.random() * 90;
+					}
+					const radian = angle * Math.PI / 180;
+					const distance = 50 + Math.random() * 100;
+					const x = Math.cos(radian) * distance;
+					const y = Math.sin(radian) * distance;
+					const rotation = Math.random() * 360;
+					span.style.setProperty('--x', `${x}px`);
+					span.style.setProperty('--y', `${y}px`);
+					span.style.setProperty('--rotation', `${rotation}deg`);
+					textContent.appendChild(span);
+				});
+				setTimeout(() => {
+					textContent.classList.add('explode');
+					setTimeout(() => {
+						textContent.innerHTML = '';
+						textContent.classList.remove('explode');
+					}, 500);
+				}, 10);
+			});
+			setTimeout(() => {
+				randomizeBtn.disabled = false;
+			}, 600);
+		};
+        const toggleHeroesGrid = () => {
+            const gridContainer = document.getElementById('heroes-grid-container');
+            const mainElements = document.querySelectorAll('.header-container, .main');
+            if (gridContainer.style.display === 'block') {
+				mainElements.forEach(el => el.style.display = ''); // Make main elements visible immediately
+				gridContainer.style.opacity = '0';
+				setTimeout(() => {
+					gridContainer.style.display = 'none';
+				}, 700);  // Delay igual a la duración de la transición
+            } else {
+                // Entrada: Ocultar main instantáneamente, mostrar grid con fade-in
+                mainElements.forEach(el => el.style.display = 'none');
+                gridContainer.style.display = 'block';
+                gridContainer.style.opacity = '0';
+                setTimeout(() => {
+                    gridContainer.style.opacity = '1';
+                }, 10);  // Delay mínimo para iniciar la transición
+                if (heroesGridNeedsUpdate) {
+                    createHeroesGrid();
+                    heroesGridNeedsUpdate = false;
+                }
+            }
+        };
+        const showModal = (message) => {
+            const modal = document.getElementById('modal');
+            const modalContent = modal.querySelector('.modal-content p');
+            modalContent.textContent = message;
+            modal.classList.add('show');
+        };
+        const closeModal = () => {
+            const modal = document.getElementById('modal');
+            modal.classList.remove('show');
+        };
+        const createHeroesGrid = () => {
+            const grid = document.getElementById('heroes-grid');
+            grid.innerHTML = '';
+            heroes.forEach(hero => {
+                const item = document.createElement('div');
+                item.className = `hero-grid-item ${hero.enabled ? '' : 'disabled'}`;
+                const img = document.createElement('img');
+                img.src = heroPortraits[hero.name] || '';
+                img.alt = hero.name;
+                img.onerror = () => {
+                    item.innerHTML = `<div>Error</div><div class="hero-name-overlay">${hero.name}</div>`;
+                };
+                item.appendChild(img);
+                item.innerHTML += `<div class="hero-name-overlay">${hero.name}</div>`;
+                item.addEventListener('click', () => {
+                    const enabledCount = heroes.filter(h => h.enabled).length;
+                    if (!hero.enabled || enabledCount > 10) {
+                        hero.enabled = !hero.enabled;
+                        item.className = `hero-grid-item ${hero.enabled ? '' : 'disabled'}`;
+                        saveHeroesToLocalStorage();
+                    } else {
+                        showModal('Cannot disable this hero. At least 10 heroes must remain enabled.');
+                    }
+                });
+                grid.appendChild(item);
+            });
+        };
+        const enableAllHeroes = () => {
+            heroes.forEach(hero => hero.enabled = true);
+            const meleeBtn = document.getElementById('melee-btn');
+            const rangedBtn = document.getElementById('ranged-btn');
+            if (meleeBtn.classList.contains('active')) {
+                meleeBtn.classList.remove('active');
+                previousEnabledStateMelee = null;
+            }
+            if (rangedBtn.classList.contains('active')) {
+                rangedBtn.classList.remove('active');
+                previousEnabledStateRanged = null;
+            }
+            createHeroesGrid();
+            saveHeroesToLocalStorage();
+        };
+        const buildRandomizer = () => {
+            const enabledForBuild = heroes.filter(h => h.enabled && buildImages[h.name]);
+            if (enabledForBuild.length === 0) {
+                showModal('No enabled heroes available for Build Randomizer.');
+                return;
+            }
+            // Filter out lastSelectedHeroName
+            let possibleHeroes = enabledForBuild.filter(hero => hero.name !== lastSelectedHeroName);
+            if (possibleHeroes.length === 0) {
+                possibleHeroes = enabledForBuild;
+            }
+            const hero = shuffle([...possibleHeroes])[0];
+            lastSelectedHeroName = hero.name;
+            const buildDiv = document.createElement('div');
+            buildDiv.id = 'build-view';
+            buildDiv.style.position = 'fixed';
+            buildDiv.style.top = '0';
+            buildDiv.style.left = '0';
+            buildDiv.style.width = '100vw';
+            buildDiv.style.height = '100vh';
+            buildDiv.style.opacity = '0';
+            buildDiv.style.transition = 'opacity 0.5s ease-in-out';
+            buildDiv.style.backgroundSize = '100% auto';
+            buildDiv.style.backgroundPosition = 'center';
+            buildDiv.style.backgroundRepeat = 'no-repeat';
+            buildDiv.style.zIndex = '30';
+            buildDiv.style.overflow = 'hidden';
+            buildDiv.style.backgroundColor = 'black';
+            const preloadedBuild = preloadedBuilds[hero.name];
+            if (preloadedBuild) {
+                const canvas = document.createElement('canvas');
+                canvas.width = preloadedBuild.width;
+                canvas.height = preloadedBuild.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(preloadedBuild, 0, 0);
+                const dataURL = canvas.toDataURL();
+                buildDiv.style.backgroundImage = `url(${dataURL})`;
+            } else {
+                const buildKey = `build-${hero.name}`;
+                const buildDataUrl = localStorage.getItem(buildKey);
+                const buildUrl = buildDataUrl || buildImages[hero.name];
+                buildDiv.style.backgroundImage = `url(${buildUrl})`;
+            }
+            // Create items container
+			const itemsContainer = document.createElement('div');
+			itemsContainer.style.position = 'absolute';
+			itemsContainer.style.top = '50%';
+			itemsContainer.style.left = '50%';
+			itemsContainer.style.transform = 'translate(-50%, -50%)';
+			itemsContainer.style.display = 'flex'; // Cambiado de 'grid' a 'flex'
+			itemsContainer.style.flexDirection = 'column'; // Apila los ítems verticalmente
+			itemsContainer.style.justifyContent = 'center'; // Centra los ítems en el eje principal (vertical)
+			itemsContainer.style.alignItems = 'left'; // Centra los ítems en el eje secundario (horizontal)
+			itemsContainer.style.gap = '0px';
+			itemsContainer.style.padding = '10px';
+			itemsContainer.style.backgroundColor = 'rgba(0,0,0,0.2)';
+			itemsContainer.style.borderRadius = '20px';
+			itemsContainer.style.maxWidth = '80%';
+			itemsContainer.style.backdropFilter = 'blur(10px)';
+			itemsContainer.style.webkitBackdropFilter = 'blur(10px)';
+			itemsContainer.style.height = '100vh';
+            // Use the pre-created items from pool
+            const pool = document.getElementById('items-pool');
+            if (!pool) {
+                showModal('Items pool not loaded. Please refresh.');
+                return;
+            }
+            const allItemDivs = Array.from(pool.children);
+            const shuffledDivs = shuffle([...allItemDivs]);
+            const selectedDivs = shuffledDivs.slice(0, 6);
+            selectedDivs.forEach(div => {
+                const clone = div.cloneNode(true);
+                // Ensure images are not blurred if already loaded
+                const cloneImg = clone.querySelector('.item-image');
+                if (cloneImg && cloneImg.classList.contains('loaded')) {
+                    cloneImg.style.filter = 'blur(0)';
+                }
+                itemsContainer.appendChild(clone);
+            });
+            buildDiv.appendChild(itemsContainer);
+            // Show the dedicated CLOSE button for Build Randomizer
+            const buildCloseButton = document.getElementById('close-build-btn');
+            buildCloseButton.classList.add('visible');
+			// Assign click event to the dedicated CLOSE button
+			buildCloseButton.onclick = () => {
+				// Start fade-out for both build view and close button simultaneously
+				buildDiv.style.opacity = '0';
+				buildCloseButton.classList.remove('visible');
+				// --- MODIFICACIÓN INICIO ---
+				// Restaurar la visibilidad de la pantalla principal INMEDIATAMENTE
+				document.body.style.overflow = originalBodyOverflow || 'auto';
+				document.querySelector('.app-container').style.display = '';
+				// --- MODIFICACIÓN FIN ---
+				setTimeout(() => {
+					buildDiv.remove();
+				}, 500);
+			};
+            setTimeout(() => {
+                buildDiv.style.opacity = '1';
+				document.querySelector('.app-container').style.display = 'none';
+				document.getElementById('heroes-grid-container').style.display = 'none';
+				document.getElementById('modal').style.display = 'none';
+            }, 10);
+            const originalBodyOverflow = document.body.style.overflow;
+            document.body.style.overflow = 'hidden';
+            document.body.appendChild(buildDiv);
+        };
+        document.addEventListener('DOMContentLoaded', () => {
+            loadHeroesFromLocalStorage();
+            preloadImages();
+            createItemsPool(); // Create items pool after preloading
+            createPlayerCards('left-team', false);
+            createPlayerCards('right-team', true);
+            createHeroesGrid();
+            document.getElementById('randomize-btn').addEventListener('click', randomizeHeroes);
+            document.getElementById('reset-btn').addEventListener('click', resetHeroes);
+            document.getElementById('heroes-btn').addEventListener('click', toggleHeroesGrid);
+            document.getElementById('zoom-in-btn').addEventListener('click', zoomIn);
+            document.getElementById('zoom-out-btn').addEventListener('click', zoomOut);
+            document.getElementById('build-btn').addEventListener('click', buildRandomizer);
+            document.querySelector('.close-grid-btn').addEventListener('click', toggleHeroesGrid);
+            document.querySelector('.enable-all-btn').addEventListener('click', enableAllHeroes);
+            document.getElementById('modal-close-btn').addEventListener('click', closeModal);
+            const meleeBtn = document.getElementById('melee-btn');
+            const rangedBtn = document.getElementById('ranged-btn');
+            meleeBtn.addEventListener('click', () => {
+                if (meleeBtn.classList.contains('active')) {
+                    previousEnabledStateMelee.forEach(saved => {
+                        const hero = heroes.find(h => h.name === saved.name);
+                        if (hero) hero.enabled = saved.enabled;
+                    });
+                    previousEnabledStateMelee = null;
+                    heroesGridNeedsUpdate = true;
+                    meleeBtn.classList.remove('active');
+                } else {
+                    if (rangedBtn.classList.contains('active')) {
+                        previousEnabledStateRanged.forEach(saved => {
+                            const hero = heroes.find(h => h.name === saved.name);
+                            if (hero) hero.enabled = saved.enabled;
+                        });
+                        previousEnabledStateRanged = null;
+                        heroesGridNeedsUpdate = true;
+                        rangedBtn.classList.remove('active');
+                    }
+                    previousEnabledStateMelee = heroes.map(h => ({ name: h.name, enabled: h.enabled }));
+                    heroes.forEach(hero => hero.enabled = hero.Melee);
+                    heroesGridNeedsUpdate = true;
+                    meleeBtn.classList.add('active');
+                }
+                const gridContainer = document.getElementById('heroes-grid-container');
+                const computedStyle = window.getComputedStyle(gridContainer);
+                if (computedStyle.display !== 'none' && heroesGridNeedsUpdate) {
+                    createHeroesGrid();
+                    heroesGridNeedsUpdate = false;
+                }
+                saveHeroesToLocalStorage();
+            });
+            rangedBtn.addEventListener('click', () => {
+                if (rangedBtn.classList.contains('active')) {
+                    previousEnabledStateRanged.forEach(saved => {
+                        const hero = heroes.find(h => h.name === saved.name);
+                        if (hero) hero.enabled = saved.enabled;
+                    });
+                    previousEnabledStateRanged = null;
+                    heroesGridNeedsUpdate = true;
+                    rangedBtn.classList.remove('active');
+                } else {
+                    if (meleeBtn.classList.contains('active')) {
+                        previousEnabledStateMelee.forEach(saved => {
+                            const hero = heroes.find(h => h.name === saved.name);
+                            if (hero) hero.enabled = saved.enabled;
+                        });
+                        previousEnabledStateMelee = null;
+                        heroesGridNeedsUpdate = true;
+                        meleeBtn.classList.remove('active');
+                    }
+                    previousEnabledStateRanged = heroes.map(h => ({ name: h.name, enabled: h.enabled }));
+                    heroes.forEach(hero => hero.enabled = !hero.Melee);
+                    heroesGridNeedsUpdate = true;
+                    rangedBtn.classList.add('active');
+                }
+                const gridContainer = document.getElementById('heroes-grid-container');
+                const computedStyle = window.getComputedStyle(gridContainer);
+                if (computedStyle.display !== 'none' && heroesGridNeedsUpdate) {
+                    createHeroesGrid();
+                    heroesGridNeedsUpdate = false;
+                }
+                saveHeroesToLocalStorage();
+            });
+        });
+    </script>
+</body>
+</html>
